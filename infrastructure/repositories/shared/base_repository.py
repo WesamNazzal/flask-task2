@@ -2,7 +2,7 @@ from typing import TypeVar, Generic, List, Dict
 from repositories.unit_of_work import UnitOfWork
 from abc import ABC, abstractmethod
 
-T = TypeVar("T")
+T = TypeVar('T')
 
 
 class BaseRepository(Generic[T]):
