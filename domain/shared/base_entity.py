@@ -17,5 +17,5 @@ class BaseEntity(ABC):
         self.updated_at = datetime.now()
 
     @abstractmethod
-    def to_dicr(self):
+    def to_dict(self):
         pass
