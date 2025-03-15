@@ -1,5 +1,7 @@
 from typing import Optional, Type
+
 from sqlalchemy.engine.base import Connection
+
 from infrastructure.database.connection.connection import engine
 
 

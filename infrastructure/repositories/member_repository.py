@@ -1,9 +1,12 @@
 from typing import Any, Dict, Optional
+
 from sqlalchemy.sql import select
 from sqlalchemy.sql.schema import Table
+
 from infrastructure.database.schema.schema import members
 from infrastructure.repositories.shared.base_repository import BaseRepository
 from infrastructure.repositories.unit_of_work import UnitOfWork
+
 
 class MemberRepository(BaseRepository[Table]):
     def __init__(self) -> None:

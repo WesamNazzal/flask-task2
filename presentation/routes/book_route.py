@@ -1,5 +1,6 @@
 from typing import Optional, Tuple
-from flask import Blueprint, jsonify, request, Response
+
+from flask import Blueprint, Response, jsonify, request
 from flask.views import MethodView
 
 from application.services.book_service import BookService

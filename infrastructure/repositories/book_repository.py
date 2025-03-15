@@ -1,9 +1,12 @@
 from typing import Any, Dict, List, Optional
+
 from sqlalchemy.sql import delete, select, update
 from sqlalchemy.sql.schema import Table
+
 from infrastructure.database.schema.schema import books
 from infrastructure.repositories.shared.base_repository import BaseRepository
 from infrastructure.repositories.unit_of_work import UnitOfWork
+
 
 class BookRepository(BaseRepository[Table]):
     def __init__(self) -> None:

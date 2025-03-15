@@ -1,5 +1,6 @@
+from typing import Any, Dict, Optional
+
 from domain.shared.base_entity import BaseEntity
-from typing import Optional, Dict, Any
 
 
 class MemberEntity(BaseEntity):

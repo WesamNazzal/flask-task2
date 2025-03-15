@@ -1,4 +1,5 @@
-from flask import Flask, jsonify, Response
+from flask import Flask, Response, jsonify
+
 from presentation.exceptions.app_exception import AppException
 from presentation.routes.app_route.app_route import main_bp
 

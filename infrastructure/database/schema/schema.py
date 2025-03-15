@@ -1,4 +1,5 @@
-from sqlalchemy import Table, Column, Integer, String, Boolean, DateTime, ForeignKey
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, Table
+
 from infrastructure.database.connection.connection import metadata
 
 books = Table(

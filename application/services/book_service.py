@@ -1,8 +1,11 @@
 from typing import Any, Dict, List, Tuple
+
 from sqlalchemy.sql.schema import Table
+
 from application.services.shared.base_service import BaseService
 from infrastructure.repositories.book_repository import BookRepository
 from presentation.exceptions.app_exception import AppException
+
 
 class BookService(BaseService[Table]):
     def __init__(self) -> None:
