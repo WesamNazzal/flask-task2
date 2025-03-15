@@ -1,5 +1,6 @@
 from domain.shared.base_entity import BaseEntity
 
+
 class MemberEntity(BaseEntity):
     def __init__(self, name: str, email: str, member_id: str = None):
         super().__init__(member_id)

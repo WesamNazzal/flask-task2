@@ -1,38 +1,50 @@
+from typing import Any, Dict, Tuple
+
+from sqlalchemy.sql.schema import Table
+
 from application.services.shared.base_service import BaseService
 from infrastructure.repositories.member_repository import MemberRepository
+from presentation.exceptions.app_exception import AppException
 
 
-class MemberService(BaseService):
-
-    def __init__(self):
+class MemberService(BaseService[Table]):
+    def __init__(self) -> None:
         super().__init__(MemberRepository())
 
-    def validate_email(self, email: str):
-        members = self.repository.get_all()
-        if any(member["email"] == email for member in members):
-            raise ValueError("Email already exists.")
+    def create_member(self, data: Dict[str, Any]) -> Tuple[Dict[str, Any], int]:
+        required_fields = ['name', 'email']
+        missing_fields = [field for field in required_fields if field not in data]
 
-    def create_member(self, data: dict):
-        self.validate_email(data["email"])
-        return self.repository.add(data)
+        if missing_fields:
+            raise AppException(f"Missing required fields: {', '.join(missing_fields)}", 400)
+        
+        existing_member = self.repo.get_by_email(data['email'])
+        if existing_member:
+            raise AppException('Email already exists', 400)
+        
+        try:
+            return self.create(data)
+        except Exception as e:
+            raise AppException(f"Database error: {str(e)}", 500)
 
-    def get_all_members(self):
-        return self.repository.get_all()
-
-    def get_member_by_id(self, member_id: str):
-        member = self.repository.get_by_id(member_id)
+    def update_member(self, member_id: int, data: Dict[str, Any]) -> Tuple[Dict[str, Any], int]:
+        member = self.repo.get_by_id(member_id)
         if not member:
-            raise ValueError("Member not found.")
-        return member
+            raise AppException('Member not found', 404)
 
-    def update_member(self, member_id: str, data: dict):
-        existing_member = self.repository.get_by_id(member_id)
-        if not existing_member:
-            raise ValueError("Member not found.")
-        return self.repository.update(member_id, data)
+        updated_member = self.update(member_id, data)  
+        return updated_member, 200
 
-    def delete_member(self, member_id: str):
-        existing_member = self.repository.get_by_id(member_id)
-        if not existing_member:
-            raise ValueError("Member not found.")
-        return self.repository.delete(member_id)
+    def delete_member(self, member_id: int) -> Tuple[Dict[str, Any], int]:
+        member = self.repo.get_by_id(member_id)
+        if not member:
+            raise AppException('Member not found', 404)
+
+        self.delete(member_id)
+        return {}, 204  
+
+    def get_member_by_email(self, email: str) -> Tuple[Dict[str, Any], int]:
+        member = self.repo.get_by_email(email)
+        if not member:
+            raise AppException('Member not found', 404)
+        return member, 200

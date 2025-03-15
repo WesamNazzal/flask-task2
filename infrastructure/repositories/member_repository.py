@@ -1,7 +1,10 @@
-from repositories.shared.base_repository import BaseRepository
+from typing import Any, Dict, Optional
+
+from sqlalchemy.sql import select
+
 from infrastructure.database.schema.schema import members
-from sqlalchemy.sql import select, insert, update, delete
-from repositories.unit_of_work import UnitOfWork
+from infrastructure.repositories.shared.base_repository import BaseRepository
+from infrastructure.repositories.unit_of_work import UnitOfWork
 
 
 class MemberRepository(BaseRepository):
@@ -9,22 +12,16 @@ class MemberRepository(BaseRepository):
     def __init__(self):
         super().__init__(members)
 
-    def _add(self, uow: UnitOfWork, data: dict):
-        query = insert(self.table).values(data)
-        uow.conn.execute(query)
+    def get_by_email(self, email: str) -> Optional[Dict[str, Any]]:
+        with UnitOfWork() as uow:
+            result = uow.connection.execute(
+                select(self.table).where(self.table.c.email == email)
+            ).mappings().first()
+            return dict(result) if result else None
 
-    def _get_all(self, uow: UnitOfWork):
-        result = uow.conn.execute(select(self.table)).fetchall()
-        return [dict(row) for row in result]
-
-    def _get_by_id(self, uow: UnitOfWork, member_id):
-        result = uow.conn.execute(select(self.table).where(self.table.c.member_id == member_id)).fetchone()
+    def get_by_id(self, member_id: int) -> Optional[Dict[str, Any]]:
+        with UnitOfWork() as uow:
+            result = uow.connection.execute(
+                select(self.table).where(self.table.c.member_id == member_id)
+            ).mappings().first()
         return dict(result) if result else None
-
-    def _update(self, uow: UnitOfWork, member_id, data: dict):
-        query = update(self.table).where(self.table.c.member_id == member_id).values(data)
-        uow.conn.execute(query)
-
-    def _delete(self, uow: UnitOfWork, member_id):
-        query = delete(self.table).where(self.table.c.member_id == member_id)
-        uow.conn.execute(query)

@@ -1,21 +1,26 @@
-from infrastructure.database.connection.connection import get_connection
+from sqlalchemy.engine.base import Connection
+
+from infrastructure.database.connection.connection import engine
 
 
 class UnitOfWork:
+    def __init__(self) -> None:
+        self.connection: Connection = engine.connect()
+        self.transaction = self.connection.begin()
 
-    def __enter__(self):
-        self.conn = get_connection()
-        self.tx = self.conn.begin()
+    def commit(self) -> None:
+        self.transaction.commit()
+
+    def rollback(self) -> None:
+        self.transaction.rollback()
+
+    def close(self) -> None:
+        self.connection.close()
+
+    def __enter__(self) -> 'UnitOfWork':
         return self
 
-    def commit(self):
-        self.tx.commit()
-
-    def rollback(self):
-        self.tx.rollback()
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type, exc_value, traceback) -> None:
         if exc_type:
             self.rollback()
-
-        self.conn.close()
+        self.close()

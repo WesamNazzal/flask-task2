@@ -1,54 +1,53 @@
-from typing import TypeVar, Generic, List, Dict
-from repositories.unit_of_work import UnitOfWork
-from abc import ABC, abstractmethod
+from typing import Any, Dict, Generic, List, Optional, TypeVar
+
+from sqlalchemy import delete, insert, select, update
+from sqlalchemy.sql.schema import Table
+
+from infrastructure.repositories.unit_of_work import UnitOfWork
 
 T = TypeVar('T')
 
 
 class BaseRepository(Generic[T]):
 
-    def __init__(self, table):
-        self.table = table
+    def __init__(self, table: Table) -> None:
+        self.table: Table = table
+        self.primary_key: str = self.table.primary_key.columns.values()[0].name  # ✅ Get primary key dynamically
 
-    def add(self, data: Dict):
+    def get_all(self) -> List[Dict[str, Any]]:
         with UnitOfWork() as uow:
-            self._add(uow, data)
+            result = uow.connection.execute(select(self.table)).mappings().all()
+            return [dict(row) for row in result] if result else []
+
+    def get(self, record_id: int) -> Optional[Dict[str, Any]]:
+        with UnitOfWork() as uow:
+            result = uow.connection.execute(
+                select(self.table).where(self.table.c[self.primary_key] == record_id)
+            ).mappings().first()
+            return dict(result) if result else None
+
+    def create(self, data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        with UnitOfWork() as uow:
+            stmt = insert(self.table).values(**data).returning(self.table)
+            result = uow.connection.execute(stmt).mappings().first()
             uow.commit()
+            return dict(result) if result else None
 
-    def get_all(self) -> List[Dict]:
+    def update(self, record_id: int, data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         with UnitOfWork() as uow:
-            return self._get_all(uow)
-
-    def get_by_id(self, entity_id) -> Dict:
-        with UnitOfWork() as uow:
-            return self._get_by_id(uow, entity_id)
-
-    def update(self, entity_id, data: Dict):
-        with UnitOfWork() as uow:
-            self._update(uow, entity_id, data)
+            stmt = (
+                update(self.table)
+                .where(self.table.c[self.primary_key] == record_id)
+                .values(**data)
+                .returning(self.table)
+            )
+            result = uow.connection.execute(stmt).mappings().first()
             uow.commit()
+            return dict(result) if result else None
 
-    def delete(self, entity_id):
+    def delete(self, record_id: int) -> bool:
         with UnitOfWork() as uow:
-            self._delete(uow, entity_id)
+            stmt = delete(self.table).where(self.table.c[self.primary_key] == record_id)
+            result = uow.connection.execute(stmt)
             uow.commit()
-
-    @abstractmethod
-    def _add(self, uow: UnitOfWork, data: Dict):
-        pass
-
-    @abstractmethod
-    def _get_all(self, uow: UnitOfWork) -> List[Dict]:
-        pass
-
-    @abstractmethod
-    def _get_by_id(self, uow: UnitOfWork, entity_id) -> Dict:
-        pass
-
-    @abstractmethod
-    def _update(self, uow: UnitOfWork, entity_id, data: Dict):
-        pass
-
-    @abstractmethod
-    def _delete(self, uow: UnitOfWork, entity_id):
-        pass
+            return result.rowcount > 0

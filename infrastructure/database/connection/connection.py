@@ -1,5 +1,6 @@
-from sqlalchemy import create_engine, MetaData
 import os
+
+from sqlalchemy import MetaData, create_engine
 
 DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://myuser:mypassword@localhost/library_db')
 

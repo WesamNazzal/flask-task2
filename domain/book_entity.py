@@ -1,6 +1,7 @@
-from domain.shared.base_entity import BaseEntity
 from datetime import datetime
 from typing import Optional
+
+from domain.shared.base_entity import BaseEntity
 
 
 class BookEntity(BaseEntity):
