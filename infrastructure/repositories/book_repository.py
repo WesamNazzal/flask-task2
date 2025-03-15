@@ -1,20 +1,19 @@
 from typing import Any, Dict, List, Optional
-
 from sqlalchemy.sql import delete, select, update
-
+from sqlalchemy.sql.schema import Table
 from infrastructure.database.schema.schema import books
 from infrastructure.repositories.shared.base_repository import BaseRepository
 from infrastructure.repositories.unit_of_work import UnitOfWork
 
-
-class BookRepository(BaseRepository):
-
-    def __init__(self):
+class BookRepository(BaseRepository[Table]):
+    def __init__(self) -> None:
         super().__init__(books)
 
     def get_books_by_author(self, author: str) -> List[Dict[str, Any]]:
         with UnitOfWork() as uow:
-            result = uow.connection.execute(select(self.table).where(self.table.c.author == author))
+            result = uow.connection.execute(
+                select(self.table).where(self.table.c.author == author)
+            )
             return [dict(row._mapping) for row in result] if result else []
 
     def is_book_borrowed(self, book_id: int) -> bool:

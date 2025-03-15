@@ -1,11 +1,8 @@
 from typing import Any, Dict, Tuple
-
 from sqlalchemy.sql.schema import Table
-
 from application.services.shared.base_service import BaseService
 from infrastructure.repositories.member_repository import MemberRepository
 from presentation.exceptions.app_exception import AppException
-
 
 class MemberService(BaseService[Table]):
     def __init__(self) -> None:
@@ -23,7 +20,8 @@ class MemberService(BaseService[Table]):
             raise AppException('Email already exists', 400)
         
         try:
-            return self.create(data)
+            created_member = self.create(data)
+            return created_member
         except Exception as e:
             raise AppException(f"Database error: {str(e)}", 500)
 
@@ -32,8 +30,8 @@ class MemberService(BaseService[Table]):
         if not member:
             raise AppException('Member not found', 404)
 
-        updated_member = self.update(member_id, data)  
-        return updated_member, 200
+        updated_member, status_code = self.update(member_id, data)  
+        return updated_member, status_code
 
     def delete_member(self, member_id: int) -> Tuple[Dict[str, Any], int]:
         member = self.repo.get_by_id(member_id)

@@ -1,4 +1,5 @@
-from flask import Blueprint, jsonify, request
+from typing import Optional, Tuple
+from flask import Blueprint, jsonify, request, Response
 from flask.views import MethodView
 
 from application.services.member_service import MemberService
@@ -9,46 +10,46 @@ member_service = MemberService()
 
 
 class MemberAPI(MethodView):
-    def get(self, member_id: int = None):
+    def get(self, member_id: Optional[int] = None) -> Tuple[Response, int]:
         try:
             if member_id is None:
                 members, status = member_service.get_all()
-                return jsonify(members), status
+                return jsonify(members), status if isinstance(status, int) else 500
             
             member, status = member_service.get_by_id(member_id)
-            return jsonify(member), status
+            return jsonify(member), status if isinstance(status, int) else 500
 
         except AppException as e:
             return jsonify(e.to_dict()), e.code
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
-    def post(self):
+    def post(self) -> Tuple[Response, int]:
         try:
             data = request.get_json()
             member, status = member_service.create_member(data)
-            return jsonify(member), status
+            return jsonify(member), status if isinstance(status, int) else 500
 
         except AppException as e:
             return jsonify(e.to_dict()), e.code
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
-    def put(self, member_id: int):
+    def put(self, member_id: int) -> Tuple[Response, int]:
         try:
             data = request.get_json()
             member, status = member_service.update_member(member_id, data)  
-            return jsonify(member), status
+            return jsonify(member), status if isinstance(status, int) else 500
 
         except AppException as e:
             return jsonify(e.to_dict()), e.code
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
-    def delete(self, member_id: int):
+    def delete(self, member_id: int) -> Tuple[Response, int]:
         try:
             _, status = member_service.delete_member(member_id)  
-            return jsonify({'message': 'Member deleted successfully!'}), status
+            return jsonify({'message': 'Member deleted successfully!'}), status if isinstance(status, int) else 500
 
         except AppException as e:
             return jsonify(e.to_dict()), e.code
@@ -57,10 +58,10 @@ class MemberAPI(MethodView):
 
 
 class MemberSearchAPI(MethodView):
-    def get(self, email: str):
+    def get(self, email: str) -> Tuple[Response, int]:
         try:
             member, status = member_service.get_member_by_email(email)
-            return jsonify(member), status
+            return jsonify(member), status if isinstance(status, int) else 500
 
         except AppException as e:
             return jsonify(e.to_dict()), e.code
@@ -72,5 +73,5 @@ member_view = MemberAPI.as_view('member_api')
 member_search_view = MemberSearchAPI.as_view('member_search_api')
 
 member_bp.add_url_rule('/', view_func=member_view, methods=['POST', 'GET'])
-member_bp.add_url_rule('/<int:member_id>', view_func=member_view, methods=['GET', 'PUT', 'DELETE'])  # ✅ Fixed type
+member_bp.add_url_rule('/<int:member_id>', view_func=member_view, methods=['GET', 'PUT', 'DELETE'])  
 member_bp.add_url_rule('/email/<string:email>', view_func=member_search_view, methods=['GET'])

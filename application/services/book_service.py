@@ -1,12 +1,10 @@
 from typing import Any, Dict, List, Tuple
-
+from sqlalchemy.sql.schema import Table
 from application.services.shared.base_service import BaseService
 from infrastructure.repositories.book_repository import BookRepository
 from presentation.exceptions.app_exception import AppException
 
-
-class BookService(BaseService):
-
+class BookService(BaseService[Table]):
     def __init__(self) -> None:
         super().__init__(BookRepository())
 
@@ -20,6 +18,8 @@ class BookService(BaseService):
 
         update_data = {'is_borrowed': True, 'borrowed_by': member_id}
         updated_book = self.repo.update_book(book_id, update_data)
+        if not updated_book:
+            raise AppException('Failed to update book', 500)
         return updated_book, 200
 
     def return_book(self, book_id: int) -> Tuple[Dict[str, Any], int]:
@@ -32,6 +32,8 @@ class BookService(BaseService):
 
         update_data = {'is_borrowed': False, 'borrowed_by': None}
         updated_book = self.repo.update_book(book_id, update_data)
+        if not updated_book:
+            raise AppException('Failed to update book', 500)
         return updated_book, 200
 
     def get_book_by_id(self, book_id: int) -> Tuple[Dict[str, Any], int]:

@@ -1,4 +1,5 @@
-from flask import Blueprint, jsonify, request
+from typing import Optional, Tuple
+from flask import Blueprint, jsonify, request, Response
 from flask.views import MethodView
 
 from application.services.book_service import BookService
@@ -9,47 +10,46 @@ book_service = BookService()
 
 
 class BookAPI(MethodView):
-
-    def get(self, book_id: int = None):
+    def get(self, book_id: Optional[int] = None) -> Tuple[Response, int]:
         try:
             if book_id is None:
                 books, status = book_service.get_all()
-                return jsonify(books), status
+                return jsonify(books), status if status is not None else 500
 
             book, status = book_service.get_book_by_id(book_id)
-            return jsonify(book), status
+            return jsonify(book), status if status is not None else 500
 
         except AppException as e:
             return jsonify(e.to_dict()), e.code
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
-    def post(self):
+    def post(self) -> Tuple[Response, int]:
         try:
             data = request.get_json()
             book, status = book_service.create(data)
-            return jsonify(book), status
+            return jsonify(book), status if status is not None else 500
 
         except AppException as e:
             return jsonify(e.to_dict()), e.code
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
-    def put(self, book_id):
+    def put(self, book_id: int) -> Tuple[Response, int]:
         try:
             data = request.get_json()
             book, status = book_service.update_book(book_id, data)
-            return jsonify(book), status
+            return jsonify(book), status if status is not None else 500
 
         except AppException as e:
             return jsonify(e.to_dict()), e.code
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
-    def delete(self, book_id):
+    def delete(self, book_id: int) -> Tuple[Response, int]:
         try:
             response, status = book_service.delete_book(book_id)
-            return jsonify(response), status
+            return jsonify(response), status if status is not None else 500
 
         except AppException as e:
             return jsonify(e.to_dict()), e.code
@@ -58,21 +58,20 @@ class BookAPI(MethodView):
 
 
 class BorrowReturnAPI(MethodView):
-
-    def post(self, book_id: int, member_id: int):
+    def post(self, book_id: int, member_id: int) -> Tuple[Response, int]:
         try:
             book, status = book_service.borrow_book(book_id, member_id)
-            return jsonify(book), status
+            return jsonify(book), status if status is not None else 500
 
         except AppException as e:
             return jsonify(e.to_dict()), e.code
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
-    def put(self, book_id: int):
+    def put(self, book_id: int) -> Tuple[Response, int]:
         try:
             book, status = book_service.return_book(book_id)
-            return jsonify(book), status
+            return jsonify(book), status if status is not None else 500
 
         except AppException as e:
             return jsonify(e.to_dict()), e.code
