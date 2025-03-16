@@ -9,8 +9,10 @@ engine = create_engine(DATABASE_URL, echo=True)
 
 metadata = MetaData()
 
+
 def get_connection() -> Connection:
     return engine.connect()
+
 
 def create_tables() -> None:
     from infrastructure.database.schema.schema import metadata

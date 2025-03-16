@@ -12,7 +12,7 @@ class BaseRepository(Generic[T]):
 
     def __init__(self, table: Table) -> None:
         self.table: Table = table
-        self.primary_key: str = self.table.primary_key.columns.values()[0].name  # ✅ Get primary key dynamically
+        self.primary_key: str = self.table.primary_key.columns.values()[0].name
 
     def get_all(self) -> List[Dict[str, Any]]:
         with UnitOfWork() as uow:

@@ -16,7 +16,7 @@ class MemberAPI(MethodView):
             if member_id is None:
                 members, status = member_service.get_all()
                 return jsonify(members), status if isinstance(status, int) else 500
-            
+
             member, status = member_service.get_by_id(member_id)
             return jsonify(member), status if isinstance(status, int) else 500
 
@@ -39,7 +39,7 @@ class MemberAPI(MethodView):
     def put(self, member_id: int) -> Tuple[Response, int]:
         try:
             data = request.get_json()
-            member, status = member_service.update_member(member_id, data)  
+            member, status = member_service.update_member(member_id, data)
             return jsonify(member), status if isinstance(status, int) else 500
 
         except AppException as e:
@@ -49,7 +49,7 @@ class MemberAPI(MethodView):
 
     def delete(self, member_id: int) -> Tuple[Response, int]:
         try:
-            _, status = member_service.delete_member(member_id)  
+            _, status = member_service.delete_member(member_id)
             return jsonify({'message': 'Member deleted successfully!'}), status if isinstance(status, int) else 500
 
         except AppException as e:
@@ -74,5 +74,5 @@ member_view = MemberAPI.as_view('member_api')
 member_search_view = MemberSearchAPI.as_view('member_search_api')
 
 member_bp.add_url_rule('/', view_func=member_view, methods=['POST', 'GET'])
-member_bp.add_url_rule('/<int:member_id>', view_func=member_view, methods=['GET', 'PUT', 'DELETE'])  
+member_bp.add_url_rule('/<int:member_id>', view_func=member_view, methods=['GET', 'PUT', 'DELETE'])
 member_bp.add_url_rule('/email/<string:email>', view_func=member_search_view, methods=['GET'])

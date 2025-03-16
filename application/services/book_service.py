@@ -1,7 +1,7 @@
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, Tuple
 
 from sqlalchemy.sql.schema import Table
-
+from datetime import datetime
 from application.services.shared.base_service import BaseService
 from infrastructure.repositories.book_repository import BookRepository
 from presentation.exceptions.app_exception import AppException
@@ -19,7 +19,7 @@ class BookService(BaseService[Table]):
         if book['is_borrowed']:
             raise AppException('Book is already borrowed', 400)
 
-        update_data = {'is_borrowed': True, 'borrowed_by': member_id}
+        update_data = {'is_borrowed': True, 'borrowed_by': member_id, 'borrowed_date': datetime.now()}
         updated_book = self.repo.update_book(book_id, update_data)
         if not updated_book:
             raise AppException('Failed to update book', 500)
