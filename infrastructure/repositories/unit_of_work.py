@@ -1,4 +1,4 @@
-from typing import Optional, Type
+from typing import Type
 
 from sqlalchemy.engine.base import Connection
 
@@ -24,9 +24,9 @@ class UnitOfWork:
 
     def __exit__(
         self,
-        exc_type: Optional[Type[BaseException]],
-        exc_value: Optional[BaseException],
-        traceback: Optional[object]
+        exc_type: Type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: object | None
     ) -> None:
         if exc_type:
             self.rollback()

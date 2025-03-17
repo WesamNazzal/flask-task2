@@ -23,7 +23,7 @@ def test_get_member_by_id(client):
 
 def test_update_member(client):
     data = {'name': 'Updated Name'}
-    response = client.put('/members/1', data=json.dumps(data), content_type='application/json')
+    response = client.patch('/members/1', data=json.dumps(data), content_type='application/json')
     assert response.status_code in [200, 404]
 
 

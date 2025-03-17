@@ -23,7 +23,7 @@ def test_get_book_by_id(client):
 
 def test_update_book(client):
     data = {'title': 'Updated Book'}
-    response = client.put('/books/1', data=json.dumps(data), content_type='application/json')
+    response = client.patch('/books/1', data=json.dumps(data), content_type='application/json')
     assert response.status_code in [200, 404]
 
 

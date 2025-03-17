@@ -1,10 +1,10 @@
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 from domain.shared.base_entity import BaseEntity
 
 
 class MemberEntity(BaseEntity):
-    def __init__(self, name: str, email: str, member_id: Optional[str] = None) -> None:
+    def __init__(self, name: str, email: str, member_id: str | None = None) -> None:
         super().__init__(member_id)
         self.name: str = name
         self.email: str = email

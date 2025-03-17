@@ -1,26 +1,25 @@
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 from domain.shared.base_entity import BaseEntity
 
 
 class BookEntity(BaseEntity):
-
     def __init__(
         self,
         title: str,
         author: str,
         is_borrowed: bool = False,
-        borrowed_by: Optional[str] = None,
-        borrowed_date: Optional[datetime] = None,
-        book_id: Optional[str] = None,
+        borrowed_by: str | None = None,
+        borrowed_date: datetime | None = None,
+        book_id: str | None = None,
     ) -> None:
         super().__init__(book_id)
         self.title: str = title
         self.author: str = author
         self.is_borrowed: bool = is_borrowed
-        self.borrowed_by: Optional[str] = borrowed_by
-        self.borrowed_date: Optional[datetime] = borrowed_date
+        self.borrowed_by: str | None = borrowed_by
+        self.borrowed_date: datetime | None = borrowed_date
 
     def to_dict(self) -> Dict[str, Any]:
         return {

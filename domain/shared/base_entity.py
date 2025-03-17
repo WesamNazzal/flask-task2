@@ -1,11 +1,11 @@
 import uuid
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 
 class BaseEntity(ABC):
-    def __init__(self, entity_id: Optional[str] = None) -> None:
+    def __init__(self, entity_id: str | None = None) -> None:
         self.id: str = entity_id or self.generate_id()
         self.created_at: datetime = datetime.now()
         self.updated_at: datetime = datetime.now()

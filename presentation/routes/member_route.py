@@ -1,4 +1,4 @@
-from typing import Optional, Tuple
+from typing import Tuple
 
 from flask import Blueprint, Response, jsonify, request
 from flask.views import MethodView
@@ -11,7 +11,7 @@ member_service = MemberService()
 
 
 class MemberAPI(MethodView):
-    def get(self, member_id: Optional[int] = None) -> Tuple[Response, int]:
+    def get(self, member_id: int | None = None) -> Tuple[Response, int]:
         try:
             if member_id is None:
                 members, status = member_service.get_all()
@@ -36,11 +36,11 @@ class MemberAPI(MethodView):
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
-    def put(self, member_id: int) -> Tuple[Response, int]:
+    def patch(self, member_id: int) -> Tuple[Response, int]:
         try:
             data = request.get_json()
             member, status = member_service.update_member(member_id, data)
-            return jsonify(member), status if isinstance(status, int) else 500
+            return jsonify(member), status
 
         except AppException as e:
             return jsonify(e.to_dict()), e.code
@@ -74,5 +74,5 @@ member_view = MemberAPI.as_view('member_api')
 member_search_view = MemberSearchAPI.as_view('member_search_api')
 
 member_bp.add_url_rule('/', view_func=member_view, methods=['POST', 'GET'])
-member_bp.add_url_rule('/<int:member_id>', view_func=member_view, methods=['GET', 'PUT', 'DELETE'])
+member_bp.add_url_rule('/<int:member_id>', view_func=member_view, methods=['GET', 'PATCH', 'DELETE'])
 member_bp.add_url_rule('/email/<string:email>', view_func=member_search_view, methods=['GET'])

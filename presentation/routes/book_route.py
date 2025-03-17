@@ -1,4 +1,4 @@
-from typing import Optional, Tuple
+from typing import Tuple
 
 from flask import Blueprint, Response, jsonify, request
 from flask.views import MethodView
@@ -11,7 +11,7 @@ book_service = BookService()
 
 
 class BookAPI(MethodView):
-    def get(self, book_id: Optional[int] = None) -> Tuple[Response, int]:
+    def get(self, book_id: int | None = None) -> Tuple[Response, int]:
         try:
             if book_id is None:
                 books, status = book_service.get_all()
@@ -19,6 +19,16 @@ class BookAPI(MethodView):
 
             book, status = book_service.get_book_by_id(book_id)
             return jsonify(book), status if status is not None else 500
+
+        except AppException as e:
+            return jsonify(e.to_dict()), e.code
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+
+    def get_borrowed_book(self, book_id: int) -> Tuple[Response, int]:
+        try:
+            book_info, status = book_service.get_borrowed_book_with_member(book_id)
+            return jsonify(book_info), status if status is not None else 500
 
         except AppException as e:
             return jsonify(e.to_dict()), e.code
@@ -36,11 +46,11 @@ class BookAPI(MethodView):
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
-    def put(self, book_id: int) -> Tuple[Response, int]:
+    def patch(self, book_id: int) -> Tuple[Response, int]:
         try:
             data = request.get_json()
             book, status = book_service.update_book(book_id, data)
-            return jsonify(book), status if status is not None else 500
+            return jsonify(book), status
 
         except AppException as e:
             return jsonify(e.to_dict()), e.code
@@ -84,6 +94,7 @@ book_view = BookAPI.as_view('book_api')
 borrow_return_view = BorrowReturnAPI.as_view('borrow_return_api')
 
 book_bp.add_url_rule('/', view_func=book_view, methods=['POST', 'GET'])
-book_bp.add_url_rule('/<int:book_id>', view_func=book_view, methods=['GET', 'PUT', 'DELETE'])
+book_bp.add_url_rule('/<int:book_id>', view_func=book_view, methods=['GET', 'PATCH', 'DELETE'])
 book_bp.add_url_rule('/borrow/<int:book_id>/<int:member_id>', view_func=borrow_return_view, methods=['POST'])
 book_bp.add_url_rule('/return/<int:book_id>', view_func=borrow_return_view, methods=['PUT'])
+book_bp.add_url_rule('/borrowed/<int:book_id>', view_func=book_view, methods=['GET'])  # ✅ New Route!

@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 from sqlalchemy.sql import select
 from sqlalchemy.sql.schema import Table
@@ -12,14 +12,14 @@ class MemberRepository(BaseRepository[Table]):
     def __init__(self) -> None:
         super().__init__(members)
 
-    def get_by_email(self, email: str) -> Optional[Dict[str, Any]]:
+    def get_by_email(self, email: str) -> Dict[str, Any] | None:
         with UnitOfWork() as uow:
             result = uow.connection.execute(
                 select(self.table).where(self.table.c.email == email)
             ).mappings().first()
             return dict(result) if result else None
 
-    def get_by_id(self, member_id: int) -> Optional[Dict[str, Any]]:
+    def get_by_id(self, member_id: int) -> Dict[str, Any] | None:
         with UnitOfWork() as uow:
             result = uow.connection.execute(
                 select(self.table).where(self.table.c.member_id == member_id)
