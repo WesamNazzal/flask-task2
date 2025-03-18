@@ -16,7 +16,7 @@ class BookAPI(MethodView):
                 books, status = book_service.get_all()
                 return jsonify(books), status if status is not None else 500
 
-            book, status = book_service.get_book_by_id(book_id)
+            book, status = book_service.get_by_id(book_id)
             return jsonify(book), status if status is not None else 500
 
         except AppException as e:
