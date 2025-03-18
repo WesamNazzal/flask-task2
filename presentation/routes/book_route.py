@@ -97,4 +97,4 @@ book_bp.add_url_rule('/', view_func=book_view, methods=['POST', 'GET'])
 book_bp.add_url_rule('/<int:book_id>', view_func=book_view, methods=['GET', 'PATCH', 'DELETE'])
 book_bp.add_url_rule('/borrow/<int:book_id>/<int:member_id>', view_func=borrow_return_view, methods=['POST'])
 book_bp.add_url_rule('/return/<int:book_id>', view_func=borrow_return_view, methods=['PUT'])
-book_bp.add_url_rule('/borrowed/<int:book_id>', view_func=book_view, methods=['GET'])  # ✅ New Route!
+book_bp.add_url_rule('/borrowed/<int:book_id>', view_func=book_view, methods=['GET'])  

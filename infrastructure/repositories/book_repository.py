@@ -33,7 +33,7 @@ class BookRepository(BaseRepository[Table]):
                     books.c.title,
                     books.c.author,
                     books.c.is_borrowed,
-                    members.c.name.label("borrowed_by_name")
+                    members.c.name.label('borrowed_by_name')
                 ).join(
                     members, books.c.borrowed_by == members.c.member_id
                 ).where(books.c.book_id == book_id)
