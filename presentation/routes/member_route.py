@@ -1,4 +1,3 @@
-from typing import Tuple
 
 from flask import Blueprint, Response, jsonify, request
 from flask.views import MethodView
@@ -11,7 +10,7 @@ member_service = MemberService()
 
 
 class MemberAPI(MethodView):
-    def get(self, member_id: int | None = None) -> Tuple[Response, int]:
+    def get(self, member_id: int | None = None) -> tuple[Response, int]:
         try:
             if member_id is None:
                 members, status = member_service.get_all()
@@ -25,7 +24,7 @@ class MemberAPI(MethodView):
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
-    def post(self) -> Tuple[Response, int]:
+    def post(self) -> tuple[Response, int]:
         try:
             data = request.get_json()
             member, status = member_service.create_member(data)
@@ -36,7 +35,7 @@ class MemberAPI(MethodView):
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
-    def patch(self, member_id: int) -> Tuple[Response, int]:
+    def patch(self, member_id: int) -> tuple[Response, int]:
         try:
             data = request.get_json()
             member, status = member_service.update_member(member_id, data)
@@ -47,7 +46,7 @@ class MemberAPI(MethodView):
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
-    def delete(self, member_id: int) -> Tuple[Response, int]:
+    def delete(self, member_id: int) -> tuple[Response, int]:
         try:
             _, status = member_service.delete_member(member_id)
             return jsonify({'message': 'Member deleted successfully!'}), status if isinstance(status, int) else 500
@@ -59,7 +58,7 @@ class MemberAPI(MethodView):
 
 
 class MemberSearchAPI(MethodView):
-    def get(self, email: str) -> Tuple[Response, int]:
+    def get(self, email: str) -> tuple[Response, int]:
         try:
             member, status = member_service.get_member_by_email(email)
             return jsonify(member), status if isinstance(status, int) else 500

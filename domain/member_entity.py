@@ -1,4 +1,3 @@
-from typing import Any, Dict
 
 from domain.shared.base_entity import BaseEntity
 
@@ -9,7 +8,7 @@ class MemberEntity(BaseEntity):
         self.name: str = name
         self.email: str = email
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, object]:
         return {
             'member_id': self.id,
             'name': self.name,

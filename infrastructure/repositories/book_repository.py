@@ -1,6 +1,7 @@
-from typing import Any, Dict, List
+
 from sqlalchemy.sql import select
 from sqlalchemy.sql.schema import Table
+
 from infrastructure.database.schema.schema import books, members
 from infrastructure.repositories.shared.base_repository import BaseRepository
 from infrastructure.repositories.unit_of_work import UnitOfWork
@@ -10,7 +11,7 @@ class BookRepository(BaseRepository[Table]):
     def __init__(self) -> None:
         super().__init__(books)
 
-    def get_books_by_author(self, author: str) -> List[Dict[str, Any]]:
+    def get_books_by_author(self, author: str) -> list[dict[str, object]]:
         with UnitOfWork() as uow:
             result = uow.connection.execute(
                 select(self.table).where(self.table.c.author == author)
@@ -25,7 +26,7 @@ class BookRepository(BaseRepository[Table]):
                 ).scalar()
             )
 
-    def get_borrowed_book_with_member(self, book_id: int) -> Dict[str, Any] | None:
+    def get_borrowed_book_with_member(self, book_id: int) -> dict[str, object] | None:
         with UnitOfWork() as uow:
             result = uow.connection.execute(
                 select(

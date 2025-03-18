@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Any, Dict
 
 from domain.shared.base_entity import BaseEntity
 
@@ -15,13 +14,13 @@ class BookEntity(BaseEntity):
         book_id: str | None = None,
     ) -> None:
         super().__init__(book_id)
-        self.title: str = title
-        self.author: str = author
-        self.is_borrowed: bool = is_borrowed
-        self.borrowed_by: str | None = borrowed_by
-        self.borrowed_date: datetime | None = borrowed_date
+        self.title = title
+        self.author = author
+        self.is_borrowed = is_borrowed
+        self.borrowed_by = borrowed_by
+        self.borrowed_date = borrowed_date
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, object]:
         return {
             'book_id': self.id,
             'title': self.title,

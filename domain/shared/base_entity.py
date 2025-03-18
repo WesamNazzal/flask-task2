@@ -1,14 +1,13 @@
 import uuid
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import Any, Dict
 
 
 class BaseEntity(ABC):
     def __init__(self, entity_id: str | None = None) -> None:
-        self.id: str = entity_id or self.generate_id()
-        self.created_at: datetime = datetime.now()
-        self.updated_at: datetime = datetime.now()
+        self.id = entity_id or self.generate_id()
+        self.created_at = datetime.now()
+        self.updated_at = datetime.now()
 
     @staticmethod
     def generate_id() -> str:
@@ -18,5 +17,5 @@ class BaseEntity(ABC):
         self.updated_at = datetime.now()
 
     @abstractmethod
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, object]:
         pass

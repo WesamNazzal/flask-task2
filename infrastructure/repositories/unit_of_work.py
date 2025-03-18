@@ -1,4 +1,3 @@
-from typing import Type
 
 from sqlalchemy.engine.base import Connection
 
@@ -24,7 +23,7 @@ class UnitOfWork:
 
     def __exit__(
         self,
-        exc_type: Type[BaseException] | None,
+        exc_type: type[BaseException] | None,
         exc_value: BaseException | None,
         traceback: object | None
     ) -> None:

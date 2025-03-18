@@ -1,4 +1,3 @@
-from typing import Tuple
 
 from flask import Blueprint, Response, jsonify, request
 from flask.views import MethodView
@@ -11,7 +10,7 @@ book_service = BookService()
 
 
 class BookAPI(MethodView):
-    def get(self, book_id: int | None = None) -> Tuple[Response, int]:
+    def get(self, book_id: int | None = None) -> tuple[Response, int]:
         try:
             if book_id is None:
                 books, status = book_service.get_all()
@@ -25,7 +24,7 @@ class BookAPI(MethodView):
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
-    def get_borrowed_book(self, book_id: int) -> Tuple[Response, int]:
+    def get_borrowed_book(self, book_id: int) -> tuple[Response, int]:
         try:
             book_info, status = book_service.get_borrowed_book_with_member(book_id)
             return jsonify(book_info), status if status is not None else 500
@@ -35,7 +34,7 @@ class BookAPI(MethodView):
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
-    def post(self) -> Tuple[Response, int]:
+    def post(self) -> tuple[Response, int]:
         try:
             data = request.get_json()
             book, status = book_service.create(data)
@@ -46,7 +45,7 @@ class BookAPI(MethodView):
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
-    def patch(self, book_id: int) -> Tuple[Response, int]:
+    def patch(self, book_id: int) -> tuple[Response, int]:
         try:
             data = request.get_json()
             book, status = book_service.update_book(book_id, data)
@@ -57,7 +56,7 @@ class BookAPI(MethodView):
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
-    def delete(self, book_id: int) -> Tuple[Response, int]:
+    def delete(self, book_id: int) -> tuple[Response, int]:
         try:
             response, status = book_service.delete_book(book_id)
             return jsonify(response), status if status is not None else 500
@@ -69,7 +68,7 @@ class BookAPI(MethodView):
 
 
 class BorrowReturnAPI(MethodView):
-    def post(self, book_id: int, member_id: int) -> Tuple[Response, int]:
+    def post(self, book_id: int, member_id: int) -> tuple[Response, int]:
         try:
             book, status = book_service.borrow_book(book_id, member_id)
             return jsonify(book), status if status is not None else 500
@@ -79,7 +78,7 @@ class BorrowReturnAPI(MethodView):
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
-    def put(self, book_id: int) -> Tuple[Response, int]:
+    def put(self, book_id: int) -> tuple[Response, int]:
         try:
             book, status = book_service.return_book(book_id)
             return jsonify(book), status if status is not None else 500
@@ -97,4 +96,4 @@ book_bp.add_url_rule('/', view_func=book_view, methods=['POST', 'GET'])
 book_bp.add_url_rule('/<int:book_id>', view_func=book_view, methods=['GET', 'PATCH', 'DELETE'])
 book_bp.add_url_rule('/borrow/<int:book_id>/<int:member_id>', view_func=borrow_return_view, methods=['POST'])
 book_bp.add_url_rule('/return/<int:book_id>', view_func=borrow_return_view, methods=['PUT'])
-book_bp.add_url_rule('/borrowed/<int:book_id>', view_func=book_view, methods=['GET'])  
+book_bp.add_url_rule('/borrowed/<int:book_id>', view_func=book_view, methods=['GET'])
